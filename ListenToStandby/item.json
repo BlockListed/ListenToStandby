@@ -1,0 +1,11 @@
+﻿{
+  "Title": "Listen to Standby",
+  "Description": "Allow yourself to hear comms from the standby channel.",
+  "PreviewImageUrl": "https://vtolvr-mods.com/static/img/Logo.png",
+  "MetaData": {
+    "DllName": "ListenToStandby.dll",
+    "AllowLoadOnStart": true,
+    "ShowOnMainList": true,
+    "DllHash": ""
+  }
+}
