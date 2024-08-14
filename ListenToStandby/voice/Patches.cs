@@ -66,6 +66,13 @@ namespace ListenToStandby.voice
                 return;
             }
 
+            if (in_channel != ModdedStandbyChannel.Instance.standbyChannel)
+            {
+                return;
+            }
+
+            Logger.Log("Received voice data for Standby");
+
             // this literally just copies the current code for doing this, but plays it on standbySource instead.
             StandbyAudioSources.StandbyAudioSource standbySource;
             if (StandbyAudioSources.Instance.sources.TryGetValue(incomingID, out standbySource) && (VTNetworkVoice.mutes == null || !VTNetworkVoice.mutes.Contains(incomingID)))
