@@ -1,4 +1,12 @@
-﻿using System;
+﻿// Yes, this should probably be seperate files.
+// Yes, I know DRY exists, but I just want anyone reading KnobPatches to suffer.
+// No, I don't apologise.
+//
+// TODO:
+// - Make the knob patching not a horrible mess that not even satan will touch.
+
+
+using System;
 using System.IO;
 using HarmonyLib;
 using NAudio.Wave.SampleProviders;
