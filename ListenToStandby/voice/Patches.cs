@@ -89,6 +89,8 @@ namespace ListenToStandby.voice
                     }
                 }
             }
+
+            return;
         }
     }
 

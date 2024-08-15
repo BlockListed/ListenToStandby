@@ -56,7 +56,7 @@ namespace ListenToStandby.voice
             AudioSource audio = go.AddComponent<AudioSource>();
             go.transform.parent = parent;
 
-            sources.Add(playerInfo.steamUser.Id, new StandbyAudioSource(audio));
+            sources.Add(playerInfo.steamUser.Id, new StandbyAudioSource(audio, playerInfo.steamUser.Id));
         }
 
         public void DestoryPlayer(PlayerInfo playerInfo)
@@ -72,17 +72,19 @@ namespace ListenToStandby.voice
         
         public class StandbyAudioSource
         {
-            private AudioSource source;
+            private readonly AudioSource source;
 
-            private AudioClip incomingStreamClip;
+            private readonly AudioClip incomingStreamClip;
+
+            private readonly SteamId id;
 
             public Queue<float> sampleQueue = new();
 
             public object inStreamLock = new();
 
-            private int minQueueCount = 1000;
+            private readonly int minQueueCount = 1000;
 
-            public StandbyAudioSource(AudioSource source)
+            public StandbyAudioSource(AudioSource source, SteamId id)
             {
                 this.incomingStreamClip = AudioClip.Create("Steam Standby Voice", (int)SteamUser.SampleRate * 10, 1, (int)SteamUser.SampleRate, true, new AudioClip.PCMReaderCallback(this.OnAudioRead));
 
@@ -91,9 +93,11 @@ namespace ListenToStandby.voice
                 this.source.minDistance = 1.5f;
                 this.source.outputAudioMixerGroup = CommRadioManager.instance.opforMixerGroup;
                 this.source.clip = this.incomingStreamClip;
+                this.source.velocityUpdateMode = AudioVelocityUpdateMode.Dynamic;
                 this.source.loop = true;
                 this.source.dopplerLevel = 0f;
                 this.source.Play();
+                this.id = id;
             }
 
             public void DestroyObjects()
@@ -106,7 +110,9 @@ namespace ListenToStandby.voice
 
             private void OnAudioRead(float[] data)
             {
-                Logger.Log("AudioSource requested data");
+                Logger.Log($"StandbyRadioSource.OnAudioRead(data) from {this.id}.");
+                Logger.Log($"AudioSource capacity: {data.Length}.");
+                Logger.Log($"Our availability: {this.sampleQueue.Count}.");
                 lock(this.inStreamLock)
                 {
                     for (int i = 0; i < data.Length; i++)
