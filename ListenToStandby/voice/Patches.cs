@@ -75,7 +75,7 @@ namespace ListenToStandby.voice
                 {
                     ___voiceDownStream.Position = 0L;
                     ___voiceDecompressedStream.Position = 0L;
-                    int num = SteamUser.DecompressVoice(___voiceDownStream, count, ___voiceDecompressedStream);
+                    int num = SteamUser.DecompressVoice(___voiceDownStream, count, ___voiceDecompressedStream) / 2;
                     ___voiceDecompressedStream.Position = 0L;
                     if (___inFloatBuffer.Length < num)
                     {
