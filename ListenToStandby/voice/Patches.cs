@@ -1,11 +1,4 @@
-﻿// Yes, this should probably be seperate files.
-// Yes, I know DRY exists, but I just want anyone reading KnobPatches to suffer.
-// No, I don't apologise.
-
-// TODO:
-// - Make the knob patching not a horrible mess that not even satan will touch.
-
-using System;
+﻿using System;
 using System.IO;
 using HarmonyLib;
 using NAudio.Wave.SampleProviders;
@@ -14,7 +7,6 @@ using UnityEngine;
 using UnityEngine.Audio;
 using VTNetworking;
 using VTOLVR.Multiplayer;
-using VTOLAPI;
 
 namespace ListenToStandby.voice
 {
@@ -154,12 +146,14 @@ namespace ListenToStandby.voice
                 return;
             }
 
-            if (VTAPI.GetVehicleEnum(__instance.gameObject) != VTOLVehicles.F45A)
+            Logger.Log($"Player spawned in {__instance.gameObject.name}");
+
+            if (!__instance.gameObject.name.StartsWith("SEVTF(Clone"))
             {
                 return;
             }
 
-            Logger.Log("AddKnobPatch.F45AddKnob");
+            Logger.Log("Adding knob to f45");
 
             var localPlane = __instance.gameObject.transform.Find("Local");
             if (localPlane == null || !localPlane.gameObject.activeInHierarchy)
@@ -234,12 +228,14 @@ namespace ListenToStandby.voice
                 return;
             }
 
-            if (VTAPI.GetVehicleEnum(__instance.gameObject) != VTOLVehicles.EF24G)
+            Logger.Log($"Player spawned in {__instance.gameObject.name}");
+
+            if (!__instance.gameObject.name.StartsWith("EF-24(Clone"))
             {
                 return;
             }
 
-            Logger.Log("AddKnobPatch.EF24AddKnob");
+            Logger.Log("Adding knob to ef24");
 
             var localPlane = __instance.gameObject.transform.Find("PassengerOnlyObjs");
             if (localPlane == null || !localPlane.gameObject.activeInHierarchy)
@@ -314,12 +310,14 @@ namespace ListenToStandby.voice
                 return;
             }
 
-            if (VTAPI.GetVehicleEnum(__instance.gameObject) != VTOLVehicles.T55)
+            Logger.Log($"Player spawned in {__instance.gameObject.name}");
+
+            if (!__instance.gameObject.name.StartsWith("T-55(Clone"))
             {
                 return;
             }
 
-            Logger.Log("AddKnobPatch.T55FrontAddKnob");
+            Logger.Log("Adding knob to t-55 front");
 
             var localPlane = __instance.gameObject.transform.Find("PassengerOnlyObjs");
             if (localPlane == null || !localPlane.gameObject.activeInHierarchy)
@@ -394,12 +392,14 @@ namespace ListenToStandby.voice
                 return;
             }
 
-            if (VTAPI.GetVehicleEnum(__instance.gameObject) != VTOLVehicles.T55)
+            Logger.Log($"Player spawned in {__instance.gameObject.name}");
+
+            if (!__instance.gameObject.name.StartsWith("T-55(Clone"))
             {
                 return;
             }
 
-            Logger.Log("AddKnobPatch.T55RearAddKnob");
+            Logger.Log("Adding knob to t-55 rear");
 
             var localPlane = __instance.gameObject.transform.Find("PassengerOnlyObjs");
             if (localPlane == null || !localPlane.gameObject.activeInHierarchy)
@@ -474,12 +474,14 @@ namespace ListenToStandby.voice
                 return;
             }
 
-            if (VTAPI.GetVehicleEnum(__instance.gameObject) != VTOLVehicles.AV42C)
+            Logger.Log($"Player spawned in {__instance.gameObject.name}");
+
+            if (!__instance.gameObject.name.StartsWith("VTOL4(Clone"))
             {
                 return;
             }
 
-            Logger.Log("AddKnobPatch.AV42AddKnob");
+            Logger.Log("Adding knob to av42");
 
             var localPlane = __instance.gameObject.transform.Find("Local");
             if (localPlane == null || !localPlane.gameObject.activeInHierarchy)
@@ -553,12 +555,14 @@ namespace ListenToStandby.voice
                 return;
             }
 
-            if (VTAPI.GetVehicleEnum(__instance.gameObject) != VTOLVehicles.FA26B)
+            Logger.Log($"Player spawned in {__instance.gameObject.name}");
+
+            if (!__instance.gameObject.name.StartsWith("FA-26B(Clone"))
             {
                 return;
             }
 
-            Logger.Log("AddKnobPatch.F26AddKnob");
+            Logger.Log("Adding knob to f26");
 
             var localPlane = __instance.gameObject.transform.Find("Local");
             if (localPlane == null || !localPlane.gameObject.activeInHierarchy)

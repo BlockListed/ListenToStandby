@@ -71,9 +71,6 @@
       <HintPath>C:\Program Files (x86)\Steam\steamapps\common\VTOL VR\VTOLVR_Data\Managed\Valve.Newtonsoft.Json.dll</HintPath>
       <Private>false</Private>
     </Reference>
-    <Reference Include="VTOLAPI">
-      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\workshop\content\3018410\3265689427\VTOLAPI.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.2">
