@@ -1,19 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-
-using UnityEngine;
 using HarmonyLib;
 using NAudio.Wave.SampleProviders;
 using Steamworks;
+using UnityEngine;
+using UnityEngine.Audio;
 using VTNetworking;
 using VTOLVR.Multiplayer;
-using UnityEngine.Audio;
-using VTOLAPI;
 
 namespace ListenToStandby.voice
 {
@@ -61,7 +54,7 @@ namespace ListenToStandby.voice
         // look, I apologise sincerely
         public static void PatchReceiveVoice(ulong ___customChannel, ulong incomingID, byte[] buffer, int offset, int count, ulong in_channel, ref byte[] ___voiceDownBuffer, ref MemoryStream ___voiceDownStream, ref MemoryStream ___voiceDecompressedStream, ref float[] ___inFloatBuffer, ref SampleChannel ___sampleProvider)
         {
-            if (in_channel > 0UL && in_channel == ___customChannel)
+            if (in_channel == 0L || in_channel == ___customChannel)
             {
                 return;
             }
@@ -71,7 +64,7 @@ namespace ListenToStandby.voice
                 return;
             }
 
-            Logger.Log("Received voice data for Standby");
+            Logger.Log($"Received voice data for Standby from {incomingID}");
 
             // this literally just copies the current code for doing this, but plays it on standbySource instead.
             StandbyAudioSources.StandbyAudioSource standbySource;
@@ -196,6 +189,415 @@ namespace ListenToStandby.voice
                 return;
             }
             label.text = "stby\nVOL";
+
+            var vr_inter = newCommsVolume.GetComponentInChildren<VRInteractable>();
+            if (vr_inter == null)
+            {
+                Logger.Log("Couldn't find vr interactable");
+                GameObject.Destroy(newCommsVolume);
+                return; 
+            }
+            vr_inter.interactableName = "Standby Radio Volume";
+
+            var vr_twist = newCommsVolume.GetComponentInChildren<VRTwistKnob>();
+            if (vr_twist == null)
+            {
+                Logger.Log("Couldn't find vr twisty boi");
+                GameObject.Destroy(newCommsVolume);
+                return;
+            }
+            vr_twist.OnSetState = new FloatEvent();
+            vr_twist.OnSetState.AddListener(s => {
+                Logger.Log($"Updating Opfor volume to {s}.");
+                OpForChangeVol.SetCommsVolumeOpforMP(s);
+            });
+
+            Logger.Log("Completed amogus");
+        }
+
+        // DRY isn't real
+        [HarmonyPatch(typeof(Actor))]
+        [HarmonyPatch("Start")]
+        [HarmonyPostfix]
+        public static void EF24AddKnob(Actor __instance)
+        {
+            if (!__instance.isPlayer)
+            {
+                return;
+            }
+
+            Logger.Log($"Player spawned in {__instance.gameObject.name}");
+
+            if (!__instance.gameObject.name.StartsWith("EF-24(Clone"))
+            {
+                return;
+            }
+
+            Logger.Log("Adding knob to ef24");
+
+            var localPlane = __instance.gameObject.transform.Find("PassengerOnlyObjs");
+            if (localPlane == null || !localPlane.gameObject.activeInHierarchy)
+            {
+                Logger.Log("PassengerOnlyObjs gameobject either doesn't exist or isn't active");
+                return;
+            }
+
+            var commsPanel = localPlane.Find("FrontCockpit/HUDDashTransform/CommsPanel_Front");
+            if (commsPanel == null)
+            {
+                Logger.Log("Couldn't find CommsPanel");
+                return;
+            }
+
+            var commsVolumeMP = commsPanel.Find("CommsVolumeMP");
+            if (commsVolumeMP == null)
+            {
+                Logger.Log("Couldn't find CommsVolumeMP");
+                return;
+            }
+
+            var label = commsVolumeMP.Find("Label (1)");
+            if (label == null)
+            {
+                Logger.Log("Couldn't find Label (1)");
+                return;
+            }
+
+            GameObject.Destroy(label.gameObject);
+
+            var newCommsVolume = GameObject.Instantiate(commsVolumeMP.gameObject);
+            newCommsVolume.transform.parent = commsPanel;
+            newCommsVolume.transform.localPosition = commsVolumeMP.transform.localPosition + (Vector3.left * 50f);
+            newCommsVolume.transform.localRotation = commsVolumeMP.transform.localRotation;
+            newCommsVolume.transform.localScale = commsVolumeMP.transform.localScale;
+            newCommsVolume.name = "StandbyCommsVolumeMP";
+
+            var vr_inter = newCommsVolume.GetComponentInChildren<VRInteractable>();
+            if (vr_inter == null)
+            {
+                Logger.Log("Couldn't find vr interactable");
+                GameObject.Destroy(newCommsVolume);
+                return; 
+            }
+            vr_inter.interactableName = "Standby Radio Volume";
+
+            var vr_twist = newCommsVolume.GetComponentInChildren<VRTwistKnob>();
+            if (vr_twist == null)
+            {
+                Logger.Log("Couldn't find vr twisty boi");
+                GameObject.Destroy(newCommsVolume);
+                return;
+            }
+            vr_twist.OnSetState = new FloatEvent();
+            vr_twist.OnSetState.AddListener(s => {
+                Logger.Log($"Updating Opfor volume to {s}.");
+                OpForChangeVol.SetCommsVolumeOpforMP(s);
+            });
+
+            Logger.Log("Completed amogus");
+        }
+
+        // DRY isn't real
+        [HarmonyPatch(typeof(Actor))]
+        [HarmonyPatch("Start")]
+        [HarmonyPostfix]
+        public static void T55FrontAddKnob(Actor __instance)
+        {
+            if (!__instance.isPlayer)
+            {
+                return;
+            }
+
+            Logger.Log($"Player spawned in {__instance.gameObject.name}");
+
+            if (!__instance.gameObject.name.StartsWith("T-55(Clone"))
+            {
+                return;
+            }
+
+            Logger.Log("Adding knob to t-55 front");
+
+            var localPlane = __instance.gameObject.transform.Find("PassengerOnlyObjs");
+            if (localPlane == null || !localPlane.gameObject.activeInHierarchy)
+            {
+                Logger.Log("PassengerOnlyObjs gameobject either doesn't exist or isn't active");
+                return;
+            }
+
+            var commsPanel = localPlane.Find("DashCanvasFront/RightDash/CommsPanel_Front");
+            if (commsPanel == null)
+            {
+                Logger.Log("Couldn't find CommsPanel");
+                return;
+            }
+
+            var commsVolumeMP = commsPanel.Find("CommsVolumeMP");
+            if (commsVolumeMP == null)
+            {
+                Logger.Log("Couldn't find CommsVolumeMP");
+                return;
+            }
+
+            var label = commsVolumeMP.Find("Label (1)");
+            if (label == null)
+            {
+                Logger.Log("Couldn't find Label (1)");
+                return;
+            }
+            GameObject.Destroy(label.gameObject);
+
+            var newCommsVolume = GameObject.Instantiate(commsVolumeMP.gameObject);
+            newCommsVolume.transform.parent = commsPanel;
+            newCommsVolume.transform.localPosition = commsVolumeMP.transform.localPosition + (Vector3.right * 35f);
+            commsVolumeMP.transform.localPosition = commsVolumeMP.transform.localPosition + (Vector3.left * 10f);
+            newCommsVolume.transform.localRotation = commsVolumeMP.transform.localRotation;
+            newCommsVolume.transform.localScale = commsVolumeMP.transform.localScale;
+            newCommsVolume.name = "StandbyCommsVolumeMP";
+
+            var vr_inter = newCommsVolume.GetComponentInChildren<VRInteractable>();
+            if (vr_inter == null)
+            {
+                Logger.Log("Couldn't find vr interactable");
+                GameObject.Destroy(newCommsVolume);
+                return; 
+            }
+            vr_inter.interactableName = "Standby Radio Volume";
+
+            var vr_twist = newCommsVolume.GetComponentInChildren<VRTwistKnob>();
+            if (vr_twist == null)
+            {
+                Logger.Log("Couldn't find vr twisty boi");
+                GameObject.Destroy(newCommsVolume);
+                return;
+            }
+            vr_twist.OnSetState = new FloatEvent();
+            vr_twist.OnSetState.AddListener(s => {
+                Logger.Log($"Updating Opfor volume to {s}.");
+                OpForChangeVol.SetCommsVolumeOpforMP(s);
+            });
+
+            Logger.Log("Completed amogus");
+        }
+
+        // DRY isn't real
+        [HarmonyPatch(typeof(Actor))]
+        [HarmonyPatch("Start")]
+        [HarmonyPostfix]
+        public static void T55RearAddKnob(Actor __instance)
+        {
+            if (!__instance.isPlayer)
+            {
+                return;
+            }
+
+            Logger.Log($"Player spawned in {__instance.gameObject.name}");
+
+            if (!__instance.gameObject.name.StartsWith("T-55(Clone"))
+            {
+                return;
+            }
+
+            Logger.Log("Adding knob to t-55 rear");
+
+            var localPlane = __instance.gameObject.transform.Find("PassengerOnlyObjs");
+            if (localPlane == null || !localPlane.gameObject.activeInHierarchy)
+            {
+                Logger.Log("PassengerOnlyObjs gameobject either doesn't exist or isn't active");
+                return;
+            }
+
+            var commsPanel = localPlane.Find("DashCanvasRear/RightDash/CommsPanel_rear");
+            if (commsPanel == null)
+            {
+                Logger.Log("Couldn't find CommsPanel");
+                return;
+            }
+
+            var commsVolumeMP = commsPanel.Find("CommsVolumeMP");
+            if (commsVolumeMP == null)
+            {
+                Logger.Log("Couldn't find CommsVolumeMP");
+                return;
+            }
+
+            var label = commsVolumeMP.Find("Label (1)");
+            if (label == null)
+            {
+                Logger.Log("Couldn't find Label (1)");
+                return;
+            }
+            GameObject.Destroy(label.gameObject);
+
+            var newCommsVolume = GameObject.Instantiate(commsVolumeMP.gameObject);
+            newCommsVolume.transform.parent = commsPanel;
+            newCommsVolume.transform.localPosition = commsVolumeMP.transform.localPosition + (Vector3.right * 35f);
+            commsVolumeMP.transform.localPosition = commsVolumeMP.transform.localPosition + (Vector3.left * 10f);
+            newCommsVolume.transform.localRotation = commsVolumeMP.transform.localRotation;
+            newCommsVolume.transform.localScale = commsVolumeMP.transform.localScale;
+            newCommsVolume.name = "StandbyCommsVolumeMP";
+
+            var vr_inter = newCommsVolume.GetComponentInChildren<VRInteractable>();
+            if (vr_inter == null)
+            {
+                Logger.Log("Couldn't find vr interactable");
+                GameObject.Destroy(newCommsVolume);
+                return; 
+            }
+            vr_inter.interactableName = "Standby Radio Volume";
+
+            var vr_twist = newCommsVolume.GetComponentInChildren<VRTwistKnob>();
+            if (vr_twist == null)
+            {
+                Logger.Log("Couldn't find vr twisty boi");
+                GameObject.Destroy(newCommsVolume);
+                return;
+            }
+            vr_twist.OnSetState = new FloatEvent();
+            vr_twist.OnSetState.AddListener(s => {
+                Logger.Log($"Updating Opfor volume to {s}.");
+                OpForChangeVol.SetCommsVolumeOpforMP(s);
+            });
+
+            Logger.Log("Completed amogus");
+        }
+
+        // DRY isn't real
+        [HarmonyPatch(typeof(Actor))]
+        [HarmonyPatch("Start")]
+        [HarmonyPostfix]
+        public static void AV42AddKnob(Actor __instance)
+        {
+            if (!__instance.isPlayer)
+            {
+                return;
+            }
+
+            Logger.Log($"Player spawned in {__instance.gameObject.name}");
+
+            if (!__instance.gameObject.name.StartsWith("VTOL4(Clone"))
+            {
+                return;
+            }
+
+            Logger.Log("Adding knob to av42");
+
+            var localPlane = __instance.gameObject.transform.Find("Local");
+            if (localPlane == null || !localPlane.gameObject.activeInHierarchy)
+            {
+                Logger.Log("Local gameobject either doesn't exist or isn't active");
+                return;
+            }
+
+            var commsPanel = localPlane.Find("DashCanvas/RightDash/CommsPanel");
+            if (commsPanel == null)
+            {
+                Logger.Log("Couldn't find CommsPanel");
+                return;
+            }
+
+            var commsVolumeMP = commsPanel.Find("CommsVolumeMP");
+            if (commsVolumeMP == null)
+            {
+                Logger.Log("Couldn't find CommsVolumeMP");
+                return;
+            }
+
+            var label = commsVolumeMP.Find("Label (1)");
+            if (label == null)
+            {
+                Logger.Log("Couldn't find Label (1)");
+                return;
+            }
+            GameObject.Destroy(label.gameObject);
+
+            var newCommsVolume = GameObject.Instantiate(commsVolumeMP.gameObject);
+            newCommsVolume.transform.parent = commsPanel;
+            newCommsVolume.transform.localPosition = commsVolumeMP.transform.localPosition + (Vector3.right * 40f);
+            newCommsVolume.transform.localRotation = commsVolumeMP.transform.localRotation;
+            newCommsVolume.transform.localScale = commsVolumeMP.transform.localScale;
+            newCommsVolume.name = "StandbyCommsVolumeMP";
+
+            var vr_inter = newCommsVolume.GetComponentInChildren<VRInteractable>();
+            if (vr_inter == null)
+            {
+                Logger.Log("Couldn't find vr interactable");
+                GameObject.Destroy(newCommsVolume);
+                return; 
+            }
+            vr_inter.interactableName = "Standby Radio Volume";
+
+            var vr_twist = newCommsVolume.GetComponentInChildren<VRTwistKnob>();
+            if (vr_twist == null)
+            {
+                Logger.Log("Couldn't find vr twisty boi");
+                GameObject.Destroy(newCommsVolume);
+                return;
+            }
+            vr_twist.OnSetState = new FloatEvent();
+            vr_twist.OnSetState.AddListener(s => {
+                Logger.Log($"Updating Opfor volume to {s}.");
+                OpForChangeVol.SetCommsVolumeOpforMP(s);
+            });
+
+            Logger.Log("Completed amogus");
+        }
+
+        // DRY isn't real
+        [HarmonyPatch(typeof(Actor))]
+        [HarmonyPatch("Start")]
+        [HarmonyPostfix]
+        public static void F26AddKnob(Actor __instance)
+        {
+            if (!__instance.isPlayer)
+            {
+                return;
+            }
+
+            Logger.Log($"Player spawned in {__instance.gameObject.name}");
+
+            if (!__instance.gameObject.name.StartsWith("FA-26B(Clone"))
+            {
+                return;
+            }
+
+            Logger.Log("Adding knob to f26");
+
+            var localPlane = __instance.gameObject.transform.Find("Local");
+            if (localPlane == null || !localPlane.gameObject.activeInHierarchy)
+            {
+                Logger.Log("Local gameobject either doesn't exist or isn't active");
+                return;
+            }
+
+            var commsPanel = localPlane.Find("DashCanvas/RightDash/CommsPanel/CommsVolume");
+            if (commsPanel == null)
+            {
+                Logger.Log("Couldn't find CommsPanel");
+                return;
+            }
+
+            var commsVolumeMP = commsPanel.Find("CommsVolumeMP");
+            if (commsVolumeMP == null)
+            {
+                Logger.Log("Couldn't find CommsVolumeMP");
+                return;
+            }
+
+            var label = commsVolumeMP.Find("Label (1)");
+            if (label == null)
+            {
+                Logger.Log("Couldn't find Label (1)");
+                return;
+            }
+            GameObject.Destroy(label.gameObject);
+
+            var newCommsVolume = GameObject.Instantiate(commsVolumeMP.gameObject);
+            newCommsVolume.transform.parent = commsPanel;
+            newCommsVolume.transform.localPosition = commsVolumeMP.transform.localPosition + (Vector3.right * 30f);
+            commsVolumeMP.transform.localPosition = commsVolumeMP.transform.localPosition + (Vector3.left * 10f);
+            newCommsVolume.transform.localRotation = commsVolumeMP.transform.localRotation;
+            newCommsVolume.transform.localScale = commsVolumeMP.transform.localScale;
+            newCommsVolume.name = "StandbyCommsVolumeMP";
 
             var vr_inter = newCommsVolume.GetComponentInChildren<VRInteractable>();
             if (vr_inter == null)

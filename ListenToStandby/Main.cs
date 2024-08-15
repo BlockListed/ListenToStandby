@@ -1,10 +1,8 @@
 ﻿global using static ListenToStandby.Logger;
+using HarmonyLib;
+using ListenToStandby.voice;
 using ModLoader.Framework;
 using ModLoader.Framework.Attributes;
-
-using HarmonyLib;
-using VTNetworking;
-using ListenToStandby.voice;
 
 namespace ListenToStandby
 {
