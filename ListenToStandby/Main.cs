@@ -1,6 +1,7 @@
 ﻿global using static ListenToStandby.Logger;
 using HarmonyLib;
-using ListenToStandby.voice;
+using ListenToStandby.Voice;
+using ListenToStandby.Voice.Knobs;
 using ModLoader.Framework;
 using ModLoader.Framework.Attributes;
 

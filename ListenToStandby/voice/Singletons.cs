@@ -4,7 +4,7 @@ using Steamworks;
 using UnityEngine;
 using VTOLVR.Multiplayer;
 
-namespace ListenToStandby.voice
+namespace ListenToStandby.Voice
 {
     class ModdedStandbyChannel
     {
