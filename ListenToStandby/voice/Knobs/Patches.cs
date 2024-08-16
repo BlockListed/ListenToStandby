@@ -66,13 +66,21 @@ namespace ListenToStandby.Voice.Knobs
 
         private static void AddEF24G(GameObject planeRoot)
         {
-            KnobAdder adder = new KnobAdder.KnobAdderBuilder()
+            KnobAdder frontAdder = new KnobAdder.KnobAdderBuilder()
                 .SetRemoveLabels(true)
                 .SetCommsVolumeMPPath("PassengerOnlyObjs/FrontCockpit/HUDDashTransform/CommsPanel_Front/CommsVolumeMP")
                 .SetOffsetNew(Vector3.left * 50f)
                 .Build();
 
-            adder.Run(planeRoot);
+            KnobAdder rearAdder = new KnobAdder.KnobAdderBuilder()
+                .SetRemoveLabels(true)
+                .SetCommsVolumeMPPath("PassengerOnlyObjs/RearCockpit/CommsPanel_Rear/CommsVolumeMP")
+                .SetOffsetOld(Vector3.left * 10f)
+                .SetOffsetNew(Vector3.right * 30f)
+                .Build();
+
+            frontAdder.Run(planeRoot);
+            rearAdder.Run(planeRoot);
         }
 
         private static void AddT55(GameObject planeRoot)
