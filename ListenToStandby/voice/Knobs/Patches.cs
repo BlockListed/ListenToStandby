@@ -37,6 +37,7 @@ namespace ListenToStandby.Voice.Knobs
                     AddAV42(__instance.gameObject);
                     break;
                 default:
+                    // This is removed, because now we'd be spamming the logs.
                     //Logger.LogWarn($"Not adding standby volume knob to {__instance.gameObject.name}");
                     break;
             };

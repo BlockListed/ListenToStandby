@@ -110,6 +110,7 @@ namespace ListenToStandby.Voice
 
             private void OnAudioRead(float[] data)
             {
+                // TODO: remove this
                 Logger.Log($"StandbyRadioSource.OnAudioRead(data) from {this.id}.");
                 Logger.Log($"AudioSource capacity: {data.Length}.");
                 Logger.Log($"Our availability: {this.sampleQueue.Count}.");

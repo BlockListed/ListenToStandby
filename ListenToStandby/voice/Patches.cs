@@ -64,6 +64,7 @@ namespace ListenToStandby.Voice
                 return;
             }
 
+            // TODO: remove this
             Logger.Log($"Received voice data for Standby from {incomingID}");
 
             // this literally just copies the current code for doing this, but plays it on standbySource instead.

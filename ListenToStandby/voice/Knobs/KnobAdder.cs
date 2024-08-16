@@ -128,6 +128,7 @@ namespace ListenToStandby.Voice.Knobs
             twistKnob.OnSetState = new FloatEvent();
             twistKnob.OnSetState.AddListener(f =>
             {
+                // TODO: remove this
                 Logger.Log($"Setting standby comms volume to {f}");
                 OpForChangeVol.SetCommsVolumeOpforMP(f);
             });
