@@ -86,7 +86,7 @@ namespace ListenToStandby.Voice.Knobs
 
             KnobAdder rearAdder = new KnobAdder.KnobAdderBuilder()
                 .SetRemoveLabels(true)
-                .SetCommsVolumeMPPath("PassengerOnlyObjs/DashCanvasRear/RightDash/CommsPanel_Rear/CommsVolumeMP")
+                .SetCommsVolumeMPPath("PassengerOnlyObjs/DashCanvasRear/RightDash/CommsPanel_rear/CommsVolumeMP")
                 .SetOffsetNew(Vector3.right * 35f)
                 .SetOffsetOld(Vector3.left * 10f)
                 .Build();
