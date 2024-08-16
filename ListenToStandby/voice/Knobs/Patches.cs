@@ -17,8 +17,8 @@ namespace ListenToStandby.Voice.Knobs
         [HarmonyPostfix]
         public static void Addknobs(Actor __instance)
         {
-            if (!__instance.isPlayer) { return; }
-
+            // Yes we are running this check on every fucking actor.
+            // Should be acceptable???? for performance.
             switch (VTAPI.GetVehicleEnum(__instance.gameObject))
             {
                 case VTOLVehicles.FA26B:
@@ -37,7 +37,7 @@ namespace ListenToStandby.Voice.Knobs
                     AddAV42(__instance.gameObject);
                     break;
                 default:
-                    Logger.LogWarn($"Not adding standby volume knob to {__instance.gameObject.name}");
+                    //Logger.LogWarn($"Not adding standby volume knob to {__instance.gameObject.name}");
                     break;
             };
 
