@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 using Steamworks;
 using UnityEngine;
@@ -56,7 +57,15 @@ namespace ListenToStandby.Voice
             AudioSource audio = go.AddComponent<AudioSource>();
             go.transform.parent = parent;
 
-            sources.Add(playerInfo.steamUser.Id, new StandbyAudioSource(audio, playerInfo.steamUser.Id));
+            try
+            {
+                sources.Add(playerInfo.steamUser.Id, new StandbyAudioSource(audio, playerInfo.steamUser.Id));
+            }
+            catch (ArgumentException)
+            {
+                DestoryPlayer(playerInfo);
+                sources.Add(playerInfo.steamUser.Id, new StandbyAudioSource(audio, playerInfo.steamUser.Id));
+            }
         }
 
         public void DestoryPlayer(PlayerInfo playerInfo)
