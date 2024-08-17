@@ -131,6 +131,8 @@ namespace ListenToStandby.Voice.Knobs
                 OpForChangeVol.SetCommsVolumeOpforMP(f);
             });
 
+            standbyCommsVolumeMP.name = "StandbyCommsVolumeMP";
+
             standbyCommsVolumeMP.transform.parent = commsPanel.transform;
             standbyCommsVolumeMP.transform.localPosition = commsVolumeMP.transform.localPosition;
             standbyCommsVolumeMP.transform.localScale = commsVolumeMP.transform.localScale;
