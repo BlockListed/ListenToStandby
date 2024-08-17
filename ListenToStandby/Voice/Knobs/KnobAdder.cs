@@ -23,7 +23,7 @@ namespace ListenToStandby.Voice.Knobs
             {
                 this._removeLabels = false;
                 this._offsetOld = Vector3.zero;
-                this._offsetNew = Vector3.back * 50f;
+                this._offsetNew = Vector3.zero;
             }
 
             public KnobAdderBuilder SetRemoveLabels(bool removeLabels)
