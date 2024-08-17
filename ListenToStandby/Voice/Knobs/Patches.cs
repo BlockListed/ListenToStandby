@@ -70,14 +70,14 @@ namespace ListenToStandby.Voice.Knobs
             KnobAdder frontAdder = new KnobAdder.KnobAdderBuilder()
                 .SetRemoveLabels(true)
                 .SetCommsVolumeMPPath("PassengerOnlyObjs/FrontCockpit/HUDDashTransform/CommsPanel_Front/CommsVolumeMP")
-                .SetOffsetOld(Vector3.left * 50f)
+                .SetOffsetNew(Vector3.left * 50f)
                 .Build();
 
             KnobAdder rearAdder = new KnobAdder.KnobAdderBuilder()
                 .SetRemoveLabels(true)
                 .SetCommsVolumeMPPath("PassengerOnlyObjs/RearCockpit/CommsPanel_Rear/CommsVolumeMP")
-                .SetOffsetNew(Vector3.right * 30f)
                 .SetOffsetOld(Vector3.left * 10f)
+                .SetOffsetNew(Vector3.right * 30f)
                 .Build();
 
             frontAdder.Run(planeRoot);
