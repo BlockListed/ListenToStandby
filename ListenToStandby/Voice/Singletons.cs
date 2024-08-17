@@ -59,12 +59,12 @@ namespace ListenToStandby.Voice
 
             try
             {
-                sources.Add(playerInfo.steamUser.Id, new StandbyAudioSource(audio, playerInfo.steamUser.Id));
+                sources.Add(playerInfo.steamUser.Id, new StandbyAudioSource(audio));
             }
             catch (ArgumentException)
             {
                 DestoryPlayer(playerInfo);
-                sources.Add(playerInfo.steamUser.Id, new StandbyAudioSource(audio, playerInfo.steamUser.Id));
+                sources.Add(playerInfo.steamUser.Id, new StandbyAudioSource(audio));
             }
         }
 
@@ -85,15 +85,13 @@ namespace ListenToStandby.Voice
 
             private readonly AudioClip incomingStreamClip;
 
-            private readonly SteamId id;
-
             public Queue<float> sampleQueue = new();
 
             public object inStreamLock = new();
 
             private readonly int minQueueCount = 1000;
 
-            public StandbyAudioSource(AudioSource source, SteamId id)
+            public StandbyAudioSource(AudioSource source)
             {
                 this.incomingStreamClip = AudioClip.Create("Steam Standby Voice", (int)SteamUser.SampleRate * 10, 1, (int)SteamUser.SampleRate, true, new AudioClip.PCMReaderCallback(this.OnAudioRead));
 
@@ -106,7 +104,6 @@ namespace ListenToStandby.Voice
                 this.source.loop = true;
                 this.source.dopplerLevel = 0f;
                 this.source.Play();
-                this.id = id;
             }
 
             public void DestroyObjects()
