@@ -90,7 +90,7 @@ namespace ListenToStandby.Voice.Knobs
             if (this._removeLabels)
             {
                 // this should work (tm).
-                GameObject.Destroy(commsVolumeMP.transform.Find("Label (1)")?.gameObject);
+                GameObject.Destroy(commsVolumeMP.GetComponentInChildren<VTText>()?.gameObject);
             }
 
             GameObject standbyCommsVolumeMP = GameObject.Instantiate(commsVolumeMP);
