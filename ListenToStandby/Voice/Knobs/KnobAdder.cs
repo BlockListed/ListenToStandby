@@ -32,13 +32,13 @@ namespace ListenToStandby.Voice.Knobs
                 return this;
             }
 
-            public KnobAdderBuilder SetOffsetOld(Vector3 offsetOld)
+            public KnobAdderBuilder SetOffsetTeam(Vector3 offsetOld)
             {
                 this._offsetOld = offsetOld;
                 return this;
             }
 
-            public KnobAdderBuilder SetOffsetNew(Vector3 offsetNew)
+            public KnobAdderBuilder SetOffsetStandby(Vector3 offsetNew)
             {
                 this._offsetNew = offsetNew;
                 return this;

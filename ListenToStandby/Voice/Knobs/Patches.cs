@@ -47,8 +47,8 @@ namespace ListenToStandby.Voice.Knobs
         {
             KnobAdder adder = new KnobAdder.KnobAdderBuilder() .SetRemoveLabels(true)
                 .SetCommsVolumeMPPath("Local/DashCanvas/RightDash/CommsPanel/CommsVolume/CommsVolumeMP")
-                .SetOffsetOld(Vector3.right * 30f)
-                .SetOffsetNew(Vector3.left * 10f)
+                .SetOffsetTeam(Vector3.right * 30f)
+                .SetOffsetStandby(Vector3.left * 10f)
                 .Build();
 
             adder.Run(planeRoot);
@@ -59,7 +59,7 @@ namespace ListenToStandby.Voice.Knobs
             KnobAdder adder = new KnobAdder.KnobAdderBuilder()
                 .SetRemoveLabels(false)
                 .SetCommsVolumeMPPath("Local/NonUIDash/CommsPanel/CommsVolumeMP")
-                .SetOffsetNew(Vector3.back * 50f)
+                .SetOffsetStandby(Vector3.back * 50f)
                 .Build();
 
             adder.Run(planeRoot);
@@ -70,14 +70,14 @@ namespace ListenToStandby.Voice.Knobs
             KnobAdder frontAdder = new KnobAdder.KnobAdderBuilder()
                 .SetRemoveLabels(true)
                 .SetCommsVolumeMPPath("PassengerOnlyObjs/FrontCockpit/HUDDashTransform/CommsPanel_Front/CommsVolumeMP")
-                .SetOffsetNew(Vector3.left * 50f)
+                .SetOffsetStandby(Vector3.left * 50f)
                 .Build();
 
             KnobAdder rearAdder = new KnobAdder.KnobAdderBuilder()
                 .SetRemoveLabels(true)
                 .SetCommsVolumeMPPath("PassengerOnlyObjs/RearCockpit/CommsPanel_Rear/CommsVolumeMP")
-                .SetOffsetNew(Vector3.left * 10f)
-                .SetOffsetOld(Vector3.right * 30f)
+                .SetOffsetStandby(Vector3.left * 10f)
+                .SetOffsetTeam(Vector3.right * 30f)
                 .Build();
 
             frontAdder.Run(planeRoot);
@@ -89,15 +89,15 @@ namespace ListenToStandby.Voice.Knobs
             KnobAdder frontAdder = new KnobAdder.KnobAdderBuilder()
                 .SetRemoveLabels(true)
                 .SetCommsVolumeMPPath("PassengerOnlyObjs/DashCanvasFront/RightDash/CommsPanel_Front/CommsVolumeMP")
-                .SetOffsetOld(Vector3.right * 35f)
-                .SetOffsetNew(Vector3.left * 10f)
+                .SetOffsetTeam(Vector3.right * 35f)
+                .SetOffsetStandby(Vector3.left * 10f)
                 .Build();
 
             KnobAdder rearAdder = new KnobAdder.KnobAdderBuilder()
                 .SetRemoveLabels(true)
                 .SetCommsVolumeMPPath("PassengerOnlyObjs/DashCanvasRear/RightDash/CommsPanel_rear/CommsVolumeMP")
-                .SetOffsetOld(Vector3.right * 35f)
-                .SetOffsetNew(Vector3.left * 10f)
+                .SetOffsetTeam(Vector3.right * 35f)
+                .SetOffsetStandby(Vector3.left * 10f)
                 .Build();
 
             frontAdder.Run(planeRoot);
@@ -109,7 +109,7 @@ namespace ListenToStandby.Voice.Knobs
             KnobAdder adder = new KnobAdder.KnobAdderBuilder()
                 .SetRemoveLabels(true)
                 .SetCommsVolumeMPPath("Local/DashCanvas/RightDash/CommsPanel/CommsVolumeMP")
-                .SetOffsetOld(Vector3.right * 40f)
+                .SetOffsetTeam(Vector3.right * 40f)
                 .Build();
 
             adder.Run(planeRoot);
