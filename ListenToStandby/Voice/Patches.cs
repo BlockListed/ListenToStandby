@@ -19,6 +19,10 @@ namespace ListenToStandby.Voice
         public static void PatchStart(ChannelRadioSystem __instance)
         {
             ModdedStandbyChannel.Instance.standbyChannel = (ulong)__instance.standbyChannel;
+            if (__instance.gameObject.name == "LSOTeamRadio")
+            {
+                ModdedStandbyChannel.Instance.standbyChannel = 0;
+            }
         }
 
         [HarmonyPatch(typeof(ChannelRadioSystem))]
