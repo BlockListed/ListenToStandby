@@ -7,11 +7,13 @@ using System.Threading.Tasks;
 using HarmonyLib;
 using UnityEngine;
 using VTOLAPI;
+using VTOLVR.Multiplayer;
 
 namespace ListenToStandby.Voice.Knobs
 {
     class AddKnobPatch
     {
+        #region plane_knobs
         [HarmonyPatch(typeof(Actor))]
         [HarmonyPatch("Start")]
         [HarmonyPostfix]
@@ -113,6 +115,35 @@ namespace ListenToStandby.Voice.Knobs
                 .Build();
 
             adder.Run(planeRoot);
+        }
+        #endregion
+
+        [HarmonyPatch(typeof(CockpitTeamRadioManager))]
+        [HarmonyPatch("OnEnable")]
+        [HarmonyPrefix]
+        public static void AddAirbossKnobs(CockpitTeamRadioManager __instance)
+        {
+            GameObject parent = __instance.transform.parent.gameObject;
+
+            if (parent.name != "AirbossObjs")
+            {
+                return;
+            }
+
+            if (parent.transform.Find("spectatorRadio/ui/StandbyCommsVolumeMP") != null)
+            {
+                Logger.Log("knob already exists on airboss, exiting");
+                return;
+            }
+
+            KnobAdder adder = new KnobAdder.KnobAdderBuilder()
+                .SetCommsVolumeMPPath("spectatorRadio/ui/VolumeKnob")
+                .SetRemoveLabels(true)
+                .SetOffsetStandby(Vector3.down * 10f)
+                .SetOffsetTeam(Vector3.up * 15f)
+                .Build();
+
+            adder.Run(parent);
         }
     }
 }
