@@ -10,6 +10,14 @@ using VTOLVR.Multiplayer;
 
 namespace ListenToStandby.Voice
 {
+    class DisableStandby : MonoBehaviour
+    {
+        public void OnEnable()
+        {
+            ModdedStandbyChannel.Instance.standbyChannel = 0;
+        }
+    }
+
     class SetStandbyPatches
     {
 
@@ -21,7 +29,11 @@ namespace ListenToStandby.Voice
             ModdedStandbyChannel.Instance.standbyChannel = (ulong)__instance.standbyChannel;
             if (__instance.gameObject.name == "LSOTeamRadio")
             {
-                ModdedStandbyChannel.Instance.standbyChannel = 0;
+                GameObject disableStandby = new GameObject();
+                DisableStandby dis = disableStandby.AddComponent<DisableStandby>();
+                disableStandby.transform.parent = __instance.transform;
+
+                dis.OnEnable();
             }
         }
 
