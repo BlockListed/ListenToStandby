@@ -130,11 +130,13 @@ namespace ListenToStandby.Voice.Knobs
                 return;
             }
 
-            if (parent.transform.Find("spectatorRadio/ui/StandbyCommsVolumeMP") != null)
+            if (__instance.transform.Find("spectatorRadio/ui/StandbyCommsVolumeMP") != null)
             {
                 Logger.Log("knob already exists on airboss, exiting");
                 return;
             }
+
+            Logger.Log("Adding knob to airboss!");
 
             KnobAdder adder = new KnobAdder.KnobAdderBuilder()
                 .SetCommsVolumeMPPath("spectatorRadio/ui/VolumeKnob")
@@ -143,7 +145,7 @@ namespace ListenToStandby.Voice.Knobs
                 .SetOffsetTeam(Vector3.up * 15f)
                 .Build();
 
-            adder.Run(parent);
+            adder.Run(__instance.gameObject);
         }
     }
 }
