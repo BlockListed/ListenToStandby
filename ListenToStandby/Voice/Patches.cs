@@ -135,7 +135,7 @@ namespace ListenToStandby.Voice
     {
         [HarmonyPatch(typeof(CommRadioManager))]
         [HarmonyPatch("SetCommsVolumeMP")]
-        [HarmonyPostfix]
+        [HarmonyPrefix]
         public static bool DisableChangeOpfor(float t, AudioMixerGroup ___mpAlliedMixerGroup)
         {
             float num = Mathf.Lerp(-30f, 8f, Mathf.Sqrt(t));
