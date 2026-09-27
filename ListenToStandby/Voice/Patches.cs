@@ -1,8 +1,4 @@
-﻿using System;
-using System.IO;
-using HarmonyLib;
-using NAudio.Wave.SampleProviders;
-using Steamworks;
+﻿using HarmonyLib;
 using UnityEngine;
 using UnityEngine.Audio;
 using VTNetworking;
@@ -65,45 +61,22 @@ namespace ListenToStandby.Voice
     class PlayStandbyPatches
     {
         [HarmonyPatch(typeof(VTNetworkVoice))]
-        [HarmonyPatch("ReceiveVTNetVoiceData")]
+        [HarmonyPatch("ReceiveVTNetVoiceDataOpus")]
         [HarmonyPrefix]
-        // look, I apologise sincerely
-        public static void PatchReceiveVoice(ulong ___customChannel, ulong incomingID, byte[] buffer, int offset, int count, ulong in_channel, ref byte[] ___voiceDownBuffer, ref MemoryStream ___voiceDownStream, ref MemoryStream ___voiceDecompressedStream, ref float[] ___inFloatBuffer, ref SampleChannel ___sampleProvider)
+        public static void PatchReceiveVoice(ref ulong in_channel, ulong ___customChannel)
         {
-            if (in_channel == 0L || in_channel == ___customChannel)
+            if (in_channel == ModdedStandbyChannel.Instance.standbyChannel)
             {
-                return;
+                in_channel = ___customChannel;
             }
+            return;
+        }
 
-            if (in_channel != ModdedStandbyChannel.Instance.standbyChannel)
-            {
-                return;
-            }
-
-            // this literally just copies the current code for doing this, but plays it on standbySource instead.
-            StandbyAudioSources.StandbyAudioSource standbySource;
-            if (StandbyAudioSources.Instance.sources.TryGetValue(incomingID, out standbySource) && (VTNetworkVoice.mutes == null || !VTNetworkVoice.mutes.Contains(incomingID)))
-            {
-                Buffer.BlockCopy(buffer, offset, ___voiceDownBuffer, 0, count);
-                lock (standbySource.inStreamLock)
-                {
-                    ___voiceDownStream.Position = 0L;
-                    ___voiceDecompressedStream.Position = 0L;
-                    int num = SteamUser.DecompressVoice(___voiceDownStream, count, ___voiceDecompressedStream) / 2;
-                    ___voiceDecompressedStream.Position = 0L;
-                    if (___inFloatBuffer.Length < num)
-                    {
-                        ___inFloatBuffer = new float[num];
-                        Debug.Log(string.Format("VTNetworkVoice: new float buffer length: {0}", num));
-                    }
-                    ___sampleProvider.Read(___inFloatBuffer, 0, num);
-                    for (int i = 0; i < num; i++)
-                    {
-                        standbySource.sampleQueue.Enqueue(___inFloatBuffer[i]);
-                    }
-                }
-            }
-
+        [HarmonyPatch(typeof(VTNetworkVoice))]
+        [HarmonyPatch("ReceiveVTNetVoiceDataOpus")]
+        [HarmonyPostfix]
+        public static void Amongus(ulong in_channel)
+        {
             return;
         }
     }
@@ -127,21 +100,7 @@ namespace ListenToStandby.Voice
             {
                 return;
             }
-            StandbyAudioSources.Instance.DestoryPlayer(player);
-        }
-    }
-
-    class DontChangeOpforVolumePatch
-    {
-        [HarmonyPatch(typeof(CommRadioManager))]
-        [HarmonyPatch("SetCommsVolumeMP")]
-        [HarmonyPrefix]
-        public static bool DisableChangeOpfor(float t, AudioMixerGroup ___mpAlliedMixerGroup)
-        {
-            float num = Mathf.Lerp(-30f, 8f, Mathf.Sqrt(t));
-            ___mpAlliedMixerGroup.audioMixer.SetFloat("CommAttenuationAllied", num);
-
-            return false;
+            StandbyAudioSources.Instance.DestroyPlayer(player);
         }
     }
 }

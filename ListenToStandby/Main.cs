@@ -16,8 +16,6 @@ namespace ListenToStandby
 
             Harmony.CreateAndPatchAll(typeof(SetStandbyPatches));
             Harmony.CreateAndPatchAll(typeof(PlayStandbyPatches));
-            Harmony.CreateAndPatchAll(typeof(AddStandbyPatches));
-            Harmony.CreateAndPatchAll(typeof(AddKnobPatch));
         }
 
         public override void UnLoad() { }

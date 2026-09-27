@@ -63,12 +63,12 @@ namespace ListenToStandby.Voice
             }
             catch (ArgumentException)
             {
-                DestoryPlayer(playerInfo);
+                DestroyPlayer(playerInfo);
                 sources.Add(playerInfo.steamUser.Id, new StandbyAudioSource(audio));
             }
         }
 
-        public void DestoryPlayer(PlayerInfo playerInfo)
+        public void DestroyPlayer(PlayerInfo playerInfo)
         {
             Logger.Log($"Destroying standby audio source for {playerInfo}.");
             StandbyAudioSource source;
