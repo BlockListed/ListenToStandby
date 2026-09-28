@@ -35,15 +35,15 @@ namespace ListenToStandby.Voice
             {
                 float x = samples[i];
 
-                st.lp1 += 0.12f * (x - st.lp1);
-                st.lp2 += 0.30f * (st.lp1 - st.lp2);
-                st.hp += 0.02f * (st.lp2 - st.hp);
+                st.lp1 += 0.25f * (x - st.lp1);
+                st.lp2 += 0.40f * (st.lp1 - st.lp2);
+                st.hp += 0.015f * (st.lp2 - st.hp);
                 float y = st.lp2 - st.hp;
 
                 st.lfoPhase += 0.00125f; if (st.lfoPhase >= 1f) st.lfoPhase -= 1f;
                 y *= 1f + 0.22f * Mathf.Sin(st.lfoPhase * 2f * Mathf.PI);
 
-                y = Mathf.Lerp(y, staticSamples[samplePos], 0.06f);
+                y = Mathf.Lerp(y, staticSamples[samplePos], 0.02f);
                 samplePos = (samplePos + 1) % staticSamples.Length;
 
                 samples[i] = y * volume;
