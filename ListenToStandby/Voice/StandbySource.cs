@@ -7,130 +7,46 @@ using VTOLVR.Multiplayer;
 
 namespace ListenToStandby.Voice
 {
-    class ModdedStandbyChannel
+    static class ModdedStandbyChannel
     {
-        public ulong standbyChannel;
+        public static ulong standbyChannel;
+        public static float volume = 1.0f;
 
-        private static ModdedStandbyChannel instance = null;
+        static float[] staticSamples;
+        static int samplePos;
 
-        ModdedStandbyChannel()
+        class UserState { public float lp1, lp2, hp, lfoPhase; }
+        static readonly Dictionary<ulong, UserState> users = new Dictionary<ulong, UserState>();
+
+        public static void ApplyDSP(float[] samples, int count, ulong id)
         {
-            standbyChannel = 0;
-        }
-
-        public static ModdedStandbyChannel Instance
-        {
-            get
+            if (staticSamples == null)
             {
-                if (instance == null)
-                {
-                    instance = new ModdedStandbyChannel();
-                }
-                return instance;
-            }
-        }
-    }
-
-    class StandbyAudioSources
-    {
-        private static StandbyAudioSources instance;
-
-        private StandbyAudioSources() { }
-
-        public static StandbyAudioSources Instance
-        {
-            get {
-                if (instance == null) { instance = new StandbyAudioSources(); } return instance;
-            }
-        }
-
-        public Dictionary<SteamId, StandbyAudioSource> sources = new();
-
-        public void CreateForPlayer(PlayerInfo playerInfo, Transform parent)
-        {
-            Logger.Log($"Creating standby audio source for {playerInfo}. Under {parent.gameObject.name}");
-            if (playerInfo.steamUser.IsMe)
-            {
-                return;
-            }
-            GameObject go = new GameObject($"{playerInfo.pilotName} standby voice");
-            AudioSource audio = go.AddComponent<AudioSource>();
-            go.transform.parent = parent;
-
-            try
-            {
-                sources.Add(playerInfo.steamUser.Id, new StandbyAudioSource(audio));
-            }
-            catch (ArgumentException)
-            {
-                DestroyPlayer(playerInfo);
-                sources.Add(playerInfo.steamUser.Id, new StandbyAudioSource(audio));
-            }
-        }
-
-        public void DestroyPlayer(PlayerInfo playerInfo)
-        {
-            Logger.Log($"Destroying standby audio source for {playerInfo}.");
-            StandbyAudioSource source;
-            if (this.sources.TryGetValue(playerInfo.steamUser.Id, out source))
-            {
-                source.DestroyObjects();
-                this.sources.Remove(playerInfo.steamUser.Id);
-            }
-        }
-        
-        public class StandbyAudioSource
-        {
-            private readonly AudioSource source;
-
-            private readonly AudioClip incomingStreamClip;
-
-            public Queue<float> sampleQueue = new();
-
-            public object inStreamLock = new();
-
-            private readonly int minQueueCount = 1000;
-
-            public StandbyAudioSource(AudioSource source)
-            {
-                this.incomingStreamClip = AudioClip.Create("Steam Standby Voice", (int)SteamUser.SampleRate * 10, 1, (int)SteamUser.SampleRate, true, new AudioClip.PCMReaderCallback(this.OnAudioRead));
-
-                this.source = source;
-                this.source.maxDistance = 100.0f;
-                this.source.minDistance = 1.5f;
-                this.source.outputAudioMixerGroup = CommRadioManager.instance.opforMixerGroup;
-                this.source.clip = this.incomingStreamClip;
-                this.source.velocityUpdateMode = AudioVelocityUpdateMode.Dynamic;
-                this.source.loop = true;
-                this.source.dopplerLevel = 0f;
-                this.source.Play();
+                if (!CommRadioManager.instance) return;
+                var clip = CommRadioManager.instance.radioStatic;
+                var staticSamplesCount = clip.samples;
+                staticSamples = new float[staticSamplesCount];
+                clip.GetData(staticSamples, 0);
             }
 
-            public void DestroyObjects()
-            {
-                UnityEngine.Object.Destroy(this.incomingStreamClip);
-                GameObject.Destroy(this.source.gameObject);;
-            }
+            if (!users.TryGetValue(id, out UserState st)) users[id] = st = new UserState();
 
-            private bool reading;
-
-            private void OnAudioRead(float[] data)
+            for (int i = 0;  i < count; i++)
             {
-                lock(this.inStreamLock)
-                {
-                    for (int i = 0; i < data.Length; i++)
-                    {
-                        if ((this.reading && this.sampleQueue.Count > 0) || (!this.reading && this.sampleQueue.Count > this.minQueueCount))
-                        {
-                            data[i] = this.sampleQueue.Dequeue() * 2f;
-                            this.reading = true;
-                        } else
-                        {
-                            data[i] = 0f;
-                            this.reading = false;
-                        }
-                    }
-                }
+                float x = samples[i];
+
+                st.lp1 += 0.12f * (x - st.lp1);
+                st.lp2 += 0.30f * (st.lp1 - st.lp2);
+                st.hp += 0.02f * (st.lp2 - st.hp);
+                float y = st.lp2 - st.hp;
+
+                st.lfoPhase += 0.00125f; if (st.lfoPhase >= 1f) st.lfoPhase -= 1f;
+                y *= 1f + 0.22f * Mathf.Sin(st.lfoPhase * 2f * Mathf.PI);
+
+                y = Mathf.Lerp(y, staticSamples[samplePos], 0.06f);
+                samplePos = (samplePos + 1) % staticSamples.Length;
+
+                samples[i] = y * volume;
             }
         }
     }
